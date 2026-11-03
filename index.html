@@ -748,7 +748,9 @@ svg.paper {
     bubble.classList.remove('pop'); void bubble.offsetWidth; bubble.classList.add('pop');
   }
   function frogQuiet() { bubble.classList.remove('show'); }
+  var raining = false;
   title.addEventListener('click', function () {
+    if (raining) return;
     title.classList.remove('boop'); void title.offsetWidth; title.classList.add('boop');
     taps++;
     clearTimeout(tapTimer);
@@ -765,6 +767,7 @@ svg.paper {
   }
   function craneRain() {
     if (reduce) return;
+    raining = true;
     var box = document.createElement('div');
     box.className = 'rain';
     var cols = ['#ffd34d', '#7fd3c9', '#9fb4ff', '#f0579c', '#ffffff'];
@@ -781,7 +784,7 @@ svg.paper {
       box.appendChild(el);
     }
     document.body.appendChild(box);
-    setTimeout(function () { box.remove(); }, 6000);
+    setTimeout(function () { box.remove(); raining = false; }, 6000);
   }
 
   // Critters live in art-relative coordinates (0..1 of the art width).
