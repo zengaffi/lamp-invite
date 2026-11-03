@@ -1,0 +1,884 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Paper Lamp Night</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;700;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap">
+<style>
+/* Layout: a tacky glitter crane floats on a night-blue table; tapped, it unfolds into a crumpled sheet that glows like a lampshade. Single deliberate night look. */
+:root {
+  --night: #131830;
+  --night-2: #1f2748;
+  --night-dark: #07090f;
+  --paper: #f5efe4;
+  --ink: #23253a;
+  --muted: #6a6676;
+  --pink: #f0579c;
+  --pink-deep: #b9306f;
+  --gold: #ffd34d;
+  --glow: 255, 196, 94;
+  --on-night: #ebe8f3;
+  --display: "Shippori Mincho", "Hiragino Mincho ProN", "Yu Mincho", Georgia, serif;
+  --body: "Zen Kaku Gothic New", "Hiragino Sans", "Segoe UI", system-ui, sans-serif;
+  color-scheme: dark;
+}
+
+html, body { min-height: 100%; }
+body {
+  background-color: var(--night);
+  color: var(--on-night);
+  font-family: var(--body);
+}
+
+.stage {
+  position: relative;
+  min-height: 100vh;
+  min-height: 100dvh;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  padding-block: 56px 32px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  overflow: hidden;
+  background: radial-gradient(110% 75% at 50% 42%, var(--night-2), var(--night) 72%);
+  transition: background-color .8s;
+}
+.stage::after { /* lights-out veil */
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--night-dark);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .8s;
+  z-index: 0;
+}
+.stage.dark::after { opacity: .82; }
+
+.hint {
+  position: relative;
+  z-index: 2;
+  margin: 0;
+  font-size: 13px;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  opacity: .75;
+  transition: opacity .4s;
+}
+.opening .hint { opacity: 0; }
+
+/* ---------- artwork ---------- */
+.art {
+  position: relative;
+  z-index: 1;
+  width: min(94vw, max(300px, calc(100vh - 230px)), 640px);
+  width: min(94vw, max(300px, calc(100dvh - 230px)), 640px);
+  max-width: 100%;
+  aspect-ratio: 1;
+  container-type: inline-size;
+}
+.stage.dark .art { z-index: 1; }
+
+.glow {
+  position: absolute;
+  inset: -30%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(var(--glow), .55) 0%, rgba(var(--glow), .18) 38%, transparent 66%);
+  opacity: 0;
+  transform: scale(.6);
+  transition: opacity 1.4s ease, transform 1.6s cubic-bezier(.2,.8,.2,1);
+  pointer-events: none;
+}
+.dark .glow { opacity: 1; transform: scale(1); animation: flicker 5s 1.6s infinite; }
+.dark .glow { background: radial-gradient(circle, rgba(var(--glow), .8) 0%, rgba(var(--glow), .3) 40%, transparent 68%); }
+@keyframes flicker {
+  0%, 100% { opacity: 1; }
+  42% { opacity: .93; }
+  45% { opacity: .78; }
+  47% { opacity: .96; }
+  70% { opacity: .9; }
+}
+
+svg.paper {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  transition: filter 1.2s;
+}
+.dark svg.paper { filter: drop-shadow(0 0 40px rgba(var(--glow), .85)); }
+
+.bob { animation: bob 3.2s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+.opening .bob { animation: none; }
+@keyframes bob {
+  0%, 100% { transform: translateY(0) rotate(-1.5deg); }
+  50% { transform: translateY(-10px) rotate(1.5deg); }
+}
+
+#wrinkles, #creases, #warm { opacity: 0; transition: opacity 1s; }
+.flat #wrinkles { opacity: 1; }
+.flat #creases { opacity: 1; }
+.dark #warm { opacity: 1; }
+
+/* sparkles around the crane */
+.spark {
+  position: absolute;
+  width: 4cqw; height: 4cqw;
+  background: var(--gold);
+  clip-path: polygon(50% 0, 60% 40%, 100% 50%, 60% 60%, 50% 100%, 40% 60%, 0 50%, 40% 40%);
+  animation: twinkle 1.8s ease-in-out infinite;
+  pointer-events: none;
+  transition: opacity .3s;
+}
+.opening .spark { opacity: 0 !important; animation: none; }
+@keyframes twinkle {
+  0%, 100% { transform: scale(.3) rotate(0); opacity: .2; }
+  50% { transform: scale(1) rotate(45deg); opacity: 1; }
+}
+
+.open-btn {
+  position: absolute;
+  inset: 8%;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  border-radius: 20px;
+  z-index: 3;
+}
+.open-btn:focus-visible { outline: 2px solid var(--gold); outline-offset: 4px; }
+.opening .open-btn { display: none; }
+
+/* text printed on the sheet */
+.sheet-text {
+  position: absolute;
+  left: 7.5%; top: 7.5%;
+  width: 85%; height: 85%;
+  box-sizing: border-box;
+  padding: 7cqw 8cqw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 2.4cqw;
+  color: var(--ink);
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity .9s .4s, transform .9s .4s;
+  pointer-events: none;
+  z-index: 2;
+}
+.lit .sheet-text { opacity: 1; transform: none; pointer-events: auto; }
+.eyebrow {
+  margin: 0;
+  font-size: max(10px, 2.6cqw);
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--pink-deep);
+  font-weight: 700;
+}
+.title {
+  margin: 0;
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: 6.6cqw;
+  line-height: 1.08;
+  text-wrap: balance;
+  cursor: default;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.title.boop { animation: boop .25s; }
+@keyframes boop { 50% { transform: scale(1.05) rotate(-1deg); } }
+.when {
+  margin: .4cqw 0 0;
+  font-family: var(--display);
+  font-size: max(14px, 3.6cqw);
+  color: var(--pink-deep);
+  font-weight: 500;
+}
+.info {
+  margin: 1cqw 0 0;
+  font-size: max(14px, 3.1cqw);
+  line-height: 1.5;
+  color: var(--ink);
+  font-weight: 500;
+  max-width: 34ch;
+}
+
+/* egg: pull cord */
+.cord {
+  position: absolute;
+  right: 8%;
+  top: -60px;
+  width: 30px;
+  height: 92px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  z-index: 4;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .6s 1.1s;
+}
+.lit .cord { opacity: 1; pointer-events: auto; }
+.cord .string {
+  position: absolute;
+  left: 50%; top: 0;
+  width: 1.5px; height: 76px;
+  background: rgba(235,232,243,.7);
+  transform: translateX(-50%);
+}
+.cord .bead {
+  position: absolute;
+  left: 50%; top: 72px;
+  width: 14px; height: 18px;
+  margin-left: -7px;
+  border-radius: 7px;
+  background: radial-gradient(circle at 35% 30%, #fff1b8, var(--gold) 55%, #b88a10);
+}
+.cord.pull { animation: pull .5s cubic-bezier(.3,1.6,.5,1); }
+@keyframes pull { 30% { transform: translateY(16px); } }
+.cord:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+/* eggs: origami frog + paper plane */
+.critter {
+  position: absolute;
+  left: 0; top: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  z-index: 5;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .8s 1.3s;
+}
+.lit .critter { opacity: 1; pointer-events: auto; }
+.critter svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.critter:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; border-radius: 8px; }
+.frog { width: 48px; height: 40px; margin: -36px 0 0 -24px; }
+.frog .fbody { transform-box: view-box; transform-origin: 50% 100%; transition: transform .14s; }
+.frog.crouch .fbody { transform: scale(1.12, .74); }
+.frog:not(.busy):hover .fbody { transform: scale(1.04, .94); }
+.plane { width: 46px; height: 30px; margin: -15px 0 0 -23px; }
+.plane:not(.busy):hover svg { transform: rotate(-8deg); }
+.plane svg { transition: transform .2s; }
+.bubble {
+  position: absolute;
+  left: 0; top: 0;
+  z-index: 6;
+  pointer-events: none;
+}
+.bubble span {
+  position: absolute;
+  bottom: 44px;
+  left: -14px;
+  white-space: nowrap;
+  background: #fffdf6;
+  color: var(--ink);
+  font: 700 14px/1.2 var(--body);
+  padding: 7px 11px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,.35);
+  transform-origin: 16px 100%;
+  transform: scale(0) rotate(-6deg);
+  transition: transform .25s cubic-bezier(.3,1.6,.5,1);
+}
+.bubble span::after {
+  content: "";
+  position: absolute;
+  left: 14px; bottom: -7px;
+  border: 7px solid transparent;
+  border-bottom: 0;
+  border-top-color: #fffdf6;
+}
+.bubble.right span { left: auto; right: -14px; transform-origin: calc(100% - 16px) 100%; }
+.bubble.right span::after { left: auto; right: 14px; }
+.bubble.show span { transform: scale(1) rotate(-3deg); }
+.bubble.pop span { animation: bpop .22s; }
+@keyframes bpop { 50% { transform: scale(1.15) rotate(2deg); } }
+
+.trail {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+  z-index: 4;
+}
+.trail polyline {
+  fill: none;
+  stroke: rgba(235,232,243,.75);
+  stroke-width: .5;
+  stroke-dasharray: 1.4 1.6;
+  stroke-linecap: round;
+  transition: opacity 1.2s;
+}
+
+/* footer controls */
+.below {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity .6s 1s;
+}
+.lit .below { opacity: 1; visibility: visible; }
+.eggs {
+  margin: 0;
+  font-size: 12px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  opacity: .7;
+  font-variant-numeric: tabular-nums;
+}
+.refold {
+  font: 500 14px var(--body);
+  color: var(--on-night);
+  background: transparent;
+  border: 1px solid rgba(235,232,243,.35);
+  border-radius: 999px;
+  padding: 9px 18px;
+  cursor: pointer;
+  transition: border-color .2s;
+}
+.refold:hover { border-color: var(--gold); }
+.refold:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+  transform: translate(-50%, 20px);
+  background: var(--gold);
+  color: var(--ink);
+  font-weight: 700;
+  font-size: 14px;
+  padding: 9px 16px;
+  border-radius: 999px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .3s, transform .3s;
+  z-index: 20;
+  white-space: nowrap;
+}
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+.rain {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 15;
+}
+.rain svg {
+  position: absolute;
+  top: -60px;
+  width: 44px;
+  height: 44px;
+  animation: fall linear forwards;
+}
+@keyframes fall {
+  to { transform: translateY(calc(100vh + 120px)) rotate(var(--spin)); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bob, .spark, .dark .glow { animation: none !important; }
+  .glow, .sheet-text, .below, #wrinkles, #creases, #warm { transition: none !important; }
+}
+</style>
+
+<main class="stage" id="stage">
+  <p class="hint" id="hint">Tap the crane to unfold it</p>
+
+  <div class="art" id="art">
+    <div class="glow" aria-hidden="true"></div>
+
+    <svg class="paper" viewBox="0 0 400 400" aria-hidden="true">
+      <defs>
+        <pattern id="glitter" width="22" height="22" patternUnits="userSpaceOnUse">
+          <circle cx="3" cy="4" r="1.1" fill="#fff" opacity=".8"/>
+          <circle cx="14" cy="9" r=".8" fill="#ffe27a"/>
+          <circle cx="8" cy="17" r="1" fill="#fff" opacity=".6"/>
+          <circle cx="19" cy="19" r=".7" fill="#ffe27a" opacity=".9"/>
+          <circle cx="17" cy="2" r=".6" fill="#fff"/>
+        </pattern>
+        <filter id="crumple" x="0" y="0" width="100%" height="100%">
+          <feTurbulence type="fractalNoise" baseFrequency="0.022 0.034" numOctaves="4" seed="11" result="n"/>
+          <feDiffuseLighting in="n" surfaceScale="4.5" lighting-color="#ffffff" result="l">
+            <feDistantLight azimuth="235" elevation="52"/>
+          </feDiffuseLighting>
+          <feComposite in="l" in2="SourceGraphic" operator="in"/>
+        </filter>
+        <filter id="rough" x="-5%" y="-5%" width="110%" height="110%">
+          <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="2" seed="4" result="t"/>
+          <feDisplacementMap id="roughMap" in="SourceGraphic" in2="t" scale="0" xChannelSelector="R" yChannelSelector="G"/>
+        </filter>
+        <radialGradient id="warmGrad" cx="50%" cy="50%" r="55%">
+          <stop offset="0" stop-color="#ffd27a" stop-opacity=".55"/>
+          <stop offset=".6" stop-color="#ffc35a" stop-opacity=".18"/>
+          <stop offset="1" stop-color="#ffb347" stop-opacity="0"/>
+        </radialGradient>
+      </defs>
+      <g class="bob" id="bob">
+        <g filter="url(#rough)" id="sheet">
+          <g id="pieces"></g>
+          <rect id="wrinkles" x="30" y="30" width="340" height="340" fill="#fff" filter="url(#crumple)" style="mix-blend-mode:multiply"/>
+          <g id="creases" stroke-linecap="round"></g>
+          <rect id="warm" x="30" y="30" width="340" height="340" fill="url(#warmGrad)"/>
+        </g>
+      </g>
+    </svg>
+
+    <span class="spark" style="left:14%;top:20%;animation-delay:0s"></span>
+    <span class="spark" style="left:80%;top:12%;animation-delay:.5s"></span>
+    <span class="spark" style="left:86%;top:58%;animation-delay:1.1s"></span>
+    <span class="spark" style="left:22%;top:72%;animation-delay:.8s"></span>
+    <span class="spark" style="left:50%;top:6%;animation-delay:1.4s"></span>
+    <span class="spark" style="left:6%;top:46%;animation-delay:.3s"></span>
+
+    <button class="open-btn" id="openBtn" type="button" aria-label="Unfold the paper crane"></button>
+
+    <!-- Invitation text -->
+    <div class="sheet-text" id="sheetText" aria-live="polite">
+      <p class="title" id="title">Fabulous Lamp Crafting Evening</p>
+      <p class="when">when?</p>
+      <p class="info">The lamps in our flat are very bare: help us make them pretty! I'll have paper, wire and paints ready. Feel free to bring as much wine as you think appropriate.</p>
+    </div>
+
+    <button class="cord" id="cord" type="button" aria-label="Pull the lamp cord">
+      <span class="string"></span><span class="bead"></span>
+    </button>
+
+    <svg class="trail" id="trail" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"></svg>
+
+    <button class="critter frog" id="frog" type="button" aria-label="An origami frog">
+      <svg viewBox="0 0 48 40" aria-hidden="true">
+        <g class="fbody" id="frogBody">
+          <polygon points="4,38 14,22 22,38" fill="#3f9b5b"/>
+          <polygon points="14,22 34,10 36,30 22,38" fill="#5cc27a"/>
+          <polygon points="14,22 34,10 20,14" fill="#7fd99a"/>
+          <polygon points="34,10 46,20 36,30" fill="#4bb06a"/>
+          <polygon points="36,30 44,38 30,38" fill="#3f9b5b"/>
+          <polygon points="22,38 36,30 30,38" fill="#357f4c"/>
+          <circle cx="37" cy="14" r="3.2" fill="#fff"/>
+          <circle cx="38" cy="14" r="1.6" fill="#1b2a20"/>
+        </g>
+      </svg>
+    </button>
+
+    <div class="bubble" id="bubble" aria-live="polite"><span id="bubbleText"></span></div>
+
+    <button class="critter plane" id="plane" type="button" aria-label="A paper airplane">
+      <svg viewBox="0 0 46 30" aria-hidden="true">
+        <polygon points="2,4 44,15 14,15" fill="#ffffff"/>
+        <polygon points="2,4 14,15 8,17" fill="#d9dbe8"/>
+        <polygon points="14,15 44,15 6,26" fill="#c4c8dc"/>
+        <polygon points="14,15 6,26 10,17" fill="#9ea4c0"/>
+      </svg>
+    </button>
+  </div>
+
+  <div class="below">
+    <p class="eggs" id="eggs">Easter eggs found: 0 / 4</p>
+    <button class="refold" id="refold" type="button">Fold it back into a crane</button>
+  </div>
+
+  <div class="toast" id="toast" role="status"></div>
+</main>
+
+<script>
+(function () {
+  var NS = 'http://www.w3.org/2000/svg';
+  var stage = document.getElementById('stage');
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---------- geometry ---------- */
+  // Crane facets (drawn back to front). Each: points + colour.
+  var CRANE = [
+    { p: [[150,250],[200,222],[128,92]],  c: '#e0428a' }, // back wing
+    { p: [[150,250],[128,92],[100,205]],  c: '#c2367a' },
+    { p: [[250,250],[230,272],[348,148]], c: '#ff83bb' }, // tail
+    { p: [[150,250],[170,272],[80,158]],  c: '#ff7ab3' }, // neck
+    { p: [[80,158],[54,184],[92,172]],    c: '#b9306f' }, // head
+    { p: [[150,250],[170,272],[200,300]], c: '#b9306f' }, // keel
+    { p: [[250,250],[230,272],[200,300]], c: '#a52a63' },
+    { p: [[150,250],[200,222],[200,300]], c: '#f0579c' }, // body
+    { p: [[250,250],[200,222],[200,300]], c: '#d9468a' },
+    { p: [[250,250],[200,222],[292,78]],  c: '#ff6fae' }, // front wing
+    { p: [[250,250],[292,78],[322,196]],  c: '#ff9cc8' }
+  ];
+  var N = CRANE.length;
+  var GOLD = '#ffd34d';
+  var LO = 30, L = 340, C = [200, 200];
+
+  function perim(t) {
+    t = ((t % 4) + 4) % 4;
+    var s = Math.floor(t), f = t - s;
+    if (s === 0) return [LO + f * L, LO];
+    if (s === 1) return [LO + L, LO + f * L];
+    if (s === 2) return [LO + L - f * L, LO + L];
+    return [LO, LO + L - f * L];
+  }
+  // Sheet regions: fan from the centre, one per crane facet, 4 points each.
+  var off = 0.2, step = 4 / N, regions = [], rim = [];
+  for (var i = 0; i < N; i++) {
+    var t0 = off + i * step, t1 = t0 + step, k = Math.ceil(t0);
+    var mid = (k > t0 && k < t1) ? perim(k) : perim((t0 + t1) / 2);
+    regions.push([C.slice(), perim(t0), mid, perim(t1)]);
+    rim.push(perim(t0));
+  }
+
+  function centroid(ps) { var x = 0, y = 0; ps.forEach(function (q) { x += q[0]; y += q[1]; }); return [x / ps.length, y / ps.length]; }
+  function ang(p, c) { return Math.atan2(p[1] - c[1], p[0] - c[0]); }
+
+  // Pair crane facets to regions by angle around their centres.
+  var craneIdx = CRANE.map(function (f, i) { return i; }).sort(function (a, b) {
+    return ang(centroid(CRANE[a].p), [200, 190]) - ang(centroid(CRANE[b].p), [200, 190]);
+  });
+  var regIdx = regions.map(function (r, i) { return i; }).sort(function (a, b) {
+    return ang(centroid(regions[a]), C) - ang(centroid(regions[b]), C);
+  });
+  function d2(a, b) { var x = a[0] - b[0], y = a[1] - b[1]; return x * x + y * y; }
+  var best = 0, bestCost = Infinity;
+  for (var sh = 0; sh < N; sh++) {
+    var cost = 0;
+    for (var j = 0; j < N; j++) cost += d2(centroid(CRANE[craneIdx[j]].p), centroid(regions[regIdx[(j + sh) % N]]));
+    if (cost < bestCost) { bestCost = cost; best = sh; }
+  }
+  var target = new Array(N);
+  for (var j2 = 0; j2 < N; j2++) target[craneIdx[j2]] = regions[regIdx[(j2 + best) % N]];
+
+  // For each facet, pick the vertex order that travels the least.
+  var from = [], to = [];
+  for (var a = 0; a < N; a++) {
+    var tri = CRANE[a].p, quad = [tri[0], tri[1], tri[2], tri[2]];
+    var tg = target[a], bestQ = quad, bc = Infinity;
+    [quad, quad.slice().reverse()].forEach(function (q) {
+      for (var r = 0; r < 4; r++) {
+        var rot = q.slice(r).concat(q.slice(0, r)), c2 = 0;
+        for (var v = 0; v < 4; v++) c2 += d2(rot[v], tg[v]);
+        if (c2 < bc) { bc = c2; bestQ = rot; }
+      }
+    });
+    from.push(bestQ);
+    to.push(tg);
+  }
+
+  // Deterministic wobble directions per vertex.
+  var seed = 7;
+  function rnd() { seed = (seed * 16807) % 2147483647; return seed / 2147483647; }
+  var wob = from.map(function () { return [0,1,2,3].map(function () { var th = rnd() * Math.PI * 2; return [Math.cos(th), Math.sin(th)]; }); });
+  var sheetCol = from.map(function (f, i) { return i % 2 ? '#efe7da' : '#f7f1e6'; });
+
+  /* ---------- build svg ---------- */
+  var piecesG = document.getElementById('pieces');
+  var polys = [], glits = [];
+  for (var n = 0; n < N; n++) {
+    var g = document.createElementNS(NS, 'g');
+    var pf = document.createElementNS(NS, 'polygon');
+    pf.setAttribute('stroke-linejoin', 'round');
+    pf.setAttribute('stroke-width', '1.4');
+    var pg = document.createElementNS(NS, 'polygon');
+    pg.setAttribute('fill', 'url(#glitter)');
+    g.appendChild(pf); g.appendChild(pg);
+    piecesG.appendChild(g);
+    polys.push(pf); glits.push(pg);
+  }
+  // Creases: the fold lines left in the sheet.
+  var creases = document.getElementById('creases');
+  function line(x1, y1, x2, y2, col, w) {
+    var l = document.createElementNS(NS, 'line');
+    l.setAttribute('x1', x1); l.setAttribute('y1', y1); l.setAttribute('x2', x2); l.setAttribute('y2', y2);
+    l.setAttribute('stroke', col); l.setAttribute('stroke-width', w);
+    creases.appendChild(l);
+  }
+  var A = LO, B = LO + L, M = 200;
+  var folds = [[A,A,B,B],[B,A,A,B],[M,A,M,B],[A,M,B,M],[M,A,A,M],[M,A,B,M],[A,M,M,B],[B,M,M,B]];
+  rim.forEach(function (p) { folds.push([200, 200, p[0], p[1]]); });
+  folds.forEach(function (f) {
+    line(f[0], f[1], f[2], f[3], 'rgba(60,40,50,.16)', 1);
+    line(f[0] + .9, f[1] + .9, f[2] + .9, f[3] + .9, 'rgba(255,255,255,.55)', .8);
+  });
+
+  /* ---------- colour + render ---------- */
+  function hex(h) { return [parseInt(h.slice(1,3),16), parseInt(h.slice(3,5),16), parseInt(h.slice(5,7),16)]; }
+  function mix(h1, h2, t) {
+    var a = hex(h1), b = hex(h2);
+    return 'rgb(' + a.map(function (v, i) { return Math.round(v + (b[i] - v) * t); }).join(',') + ')';
+  }
+  function setPiece(i, v) {
+    var amp = Math.sin(Math.PI * v) * 16, pts = [];
+    for (var k = 0; k < 4; k++) {
+      var x = from[i][k][0] + (to[i][k][0] - from[i][k][0]) * v + wob[i][k][0] * amp;
+      var y = from[i][k][1] + (to[i][k][1] - from[i][k][1]) * v + wob[i][k][1] * amp;
+      pts.push(x.toFixed(2) + ',' + y.toFixed(2));
+    }
+    var s = pts.join(' ');
+    var fill = mix(CRANE[i].c, sheetCol[i], v);
+    polys[i].setAttribute('points', s);
+    polys[i].setAttribute('fill', fill);
+    polys[i].setAttribute('stroke', v > .85 ? fill : mix(GOLD, sheetCol[i], v));
+    glits[i].setAttribute('points', s);
+    glits[i].setAttribute('opacity', (1 - v).toFixed(3));
+  }
+  for (var q = 0; q < N; q++) setPiece(q, 0);
+
+  function ease(t) { return t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2; }
+  function clamp(t) { return t < 0 ? 0 : t > 1 ? 1 : t; }
+
+  function morph(open, done) {
+    var D = reduce ? 1 : 2100, st = 0.045, t0 = performance.now();
+    function frame(now) {
+      var t = clamp((now - t0) / D);
+      for (var i = 0; i < N; i++) {
+        var local = clamp((t - i * st) / (1 - (N - 1) * st));
+        var e = ease(local);
+        setPiece(i, open ? e : 1 - e);
+      }
+      if (t < 1) requestAnimationFrame(frame); else done();
+    }
+    requestAnimationFrame(frame);
+  }
+
+  var roughMap = document.getElementById('roughMap');
+  function rough(fromV, toV, D) {
+    var t0 = performance.now();
+    D = reduce ? 1 : D;
+    function f(now) {
+      var t = clamp((now - t0) / D);
+      roughMap.setAttribute('scale', (fromV + (toV - fromV) * ease(t)).toFixed(2));
+      if (t < 1) requestAnimationFrame(f);
+    }
+    requestAnimationFrame(f);
+  }
+
+  /* ---------- open / refold ---------- */
+  var busy = false;
+  var openBtn = document.getElementById('openBtn');
+  var refoldBtn = document.getElementById('refold');
+
+  openBtn.addEventListener('click', function () {
+    if (busy) return;
+    busy = true;
+    stage.classList.add('opening');
+    morph(true, function () {
+      stage.classList.add('flat');
+      rough(0, 7, 900);
+      setTimeout(function () {
+        stage.classList.add('lit');
+        frogRest(); planeRest();
+        busy = false;
+      }, reduce ? 0 : 500);
+    });
+  });
+
+  refoldBtn.addEventListener('click', function () {
+    if (busy) return;
+    busy = true;
+    stage.classList.remove('lit', 'dark');
+    bubble.classList.remove('show');
+    setTimeout(function () {
+      stage.classList.remove('flat');
+      rough(7, 0, 600);
+      morph(false, function () {
+        stage.classList.remove('opening');
+        busy = false;
+        openBtn.focus({ preventScroll: true });
+      });
+    }, reduce ? 0 : 700);
+  });
+
+  /* ---------- easter eggs ---------- */
+  var found = {}, count = 0, TOTAL = 4;
+  var eggsEl = document.getElementById('eggs');
+  var toast = document.getElementById('toast'), toastTimer;
+  function say(msg) {
+    toast.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { toast.classList.remove('show'); }, 2400);
+  }
+  function egg(key, label) {
+    if (found[key]) return;
+    found[key] = true;
+    count++;
+    eggsEl.textContent = count === TOTAL ? 'All 4 easter eggs found. See you there!' : 'Easter eggs found: ' + count + ' / ' + TOTAL;
+    say('Easter egg: ' + label);
+  }
+
+  // 2. Pull cord → lights out
+  var cord = document.getElementById('cord');
+  cord.addEventListener('click', function () {
+    cord.classList.remove('pull'); void cord.offsetWidth; cord.classList.add('pull');
+    stage.classList.toggle('dark');
+    egg('cord', 'lamp on');
+  });
+
+  // 1. Title tapped 5 times → crane rain
+  var title = document.getElementById('title'), taps = 0, tapTimer;
+  var bubble = document.getElementById('bubble'), bubbleText = document.getElementById('bubbleText');
+  var TAPS = 20;
+  function cheer(n) {
+    if (n < 5) return 'Keep going!';
+    if (n < 9) return "You're doing great!";
+    if (n < 12) return 'Trust me!';
+    return 'Almost there…';
+  }
+  function frogSays(msg) {
+    if (frogBusy) return;
+    var sp = frogSpots[frogAt];
+    var W = art.clientWidth;
+    bubble.style.transform = 'translate(' + (sp[0] * W) + 'px,' + (sp[1] * W) + 'px)';
+    bubble.classList.toggle('right', frogAt === 1);
+    bubbleText.textContent = msg;
+    bubble.classList.add('show');
+    bubble.classList.remove('pop'); void bubble.offsetWidth; bubble.classList.add('pop');
+  }
+  function frogQuiet() { bubble.classList.remove('show'); }
+  title.addEventListener('click', function () {
+    title.classList.remove('boop'); void title.offsetWidth; title.classList.add('boop');
+    taps++;
+    clearTimeout(tapTimer);
+    tapTimer = setTimeout(function () { taps = 0; frogQuiet(); }, 1800);
+    if (taps >= TAPS) { taps = 0; frogQuiet(); craneRain(); egg('rain', 'crane shower'); }
+    else frogSays(cheer(taps));
+  });
+  function miniCrane(col) {
+    var s = '<svg viewBox="40 60 320 260" xmlns="' + NS + '">';
+    CRANE.forEach(function (f, i) {
+      s += '<polygon points="' + f.p.map(function (p) { return p.join(','); }).join(' ') + '" fill="' + (i % 3 === 0 ? col : f.c) + '"/>';
+    });
+    return s + '</svg>';
+  }
+  function craneRain() {
+    if (reduce) return;
+    var box = document.createElement('div');
+    box.className = 'rain';
+    var cols = ['#ffd34d', '#7fd3c9', '#9fb4ff', '#f0579c', '#ffffff'];
+    for (var i = 0; i < 26; i++) {
+      var w = document.createElement('div');
+      w.innerHTML = miniCrane(cols[i % cols.length]);
+      var el = w.firstChild;
+      el.style.left = (Math.random() * 100) + 'vw';
+      el.style.animationDuration = (2.4 + Math.random() * 2.2) + 's';
+      el.style.animationDelay = (Math.random() * 1.2) + 's';
+      el.style.setProperty('--spin', (Math.random() > .5 ? '' : '-') + (180 + Math.random() * 360) + 'deg');
+      var sz = 26 + Math.random() * 30;
+      el.style.width = el.style.height = sz + 'px';
+      box.appendChild(el);
+    }
+    document.body.appendChild(box);
+    setTimeout(function () { box.remove(); }, 6000);
+  }
+
+  // Critters live in art-relative coordinates (0..1 of the art width).
+  var art = document.getElementById('art');
+  function put(el, x, y, rot, sx) {
+    var W = art.clientWidth;
+    el.style.transform = 'translate(' + (x * W) + 'px,' + (y * W) + 'px) rotate(' + (rot || 0) + 'deg) scaleX(' + (sx || 1) + ')';
+  }
+
+  // 3. Origami frog hops across the sheet
+  var frog = document.getElementById('frog');
+  var frogSpots = [[.17, .9], [.83, .9]], frogAt = 0, frogBusy = false;
+  function frogRest() { put(frog, frogSpots[frogAt][0], frogSpots[frogAt][1], 0, frogAt === 0 ? 1 : -1); }
+  frog.addEventListener('click', function () {
+    if (frogBusy) return;
+    frogQuiet();
+    egg('frog', 'leapfrog');
+    var next = 1 - frogAt, a = frogSpots[frogAt], b = frogSpots[next], dir = next === 1 ? 1 : -1;
+    if (reduce) { frogAt = next; frogRest(); return; }
+    frogBusy = true; frog.classList.add('busy', 'crouch');
+    // three hops: two small, one big over the middle
+    var hops = [[0, .18, .12], [.18, .82, .5], [.82, 1, .12]];
+    setTimeout(function () {
+      frog.classList.remove('crouch');
+      var h = 0;
+      function hop() {
+        var seg = hops[h], t0 = performance.now(), D = seg[2] > .3 ? 900 : 380;
+        function f(now) {
+          var u = clamp((now - t0) / D), k = seg[0] + (seg[1] - seg[0]) * u;
+          var x = a[0] + (b[0] - a[0]) * k;
+          var y = a[1] - Math.sin(Math.PI * u) * seg[2] * (seg[2] > .3 ? 1.1 : 1);
+          var tilt = Math.cos(Math.PI * u) * -28 * dir;
+          put(frog, x, y, tilt, dir);
+          if (u < 1) requestAnimationFrame(f);
+          else if (++h < hops.length) {
+            frog.classList.add('crouch');
+            setTimeout(function () { frog.classList.remove('crouch'); hop(); }, 110);
+          } else {
+            frogAt = next; frogBusy = false; frog.classList.remove('busy');
+            frog.classList.add('crouch'); setTimeout(function () { frog.classList.remove('crouch'); }, 160);
+            frogRest();
+          }
+        }
+        requestAnimationFrame(f);
+      }
+      hop();
+    }, 180);
+  });
+
+  // 4. Paper airplane loops around the lamp, leaving a dashed trail
+  var plane = document.getElementById('plane'), trail = document.getElementById('trail'), planeBusy = false;
+  var home = [.05, .05];
+  var route = [home, [.5, -.06], [.94, .12], [1.08, .48], [.88, .74], [.72, .6], [.86, .44], [1.02, .62],
+               [.62, 1.06], [.14, .98], [-.06, .55], [.0, .2], home];
+  function cr(p0, p1, p2, p3, t) {
+    var t2 = t * t, t3 = t2 * t;
+    return [0, 1].map(function (i) {
+      return .5 * (2 * p1[i] + (-p0[i] + p2[i]) * t + (2 * p0[i] - 5 * p1[i] + 4 * p2[i] - p3[i]) * t2 + (-p0[i] + 3 * p1[i] - 3 * p2[i] + p3[i]) * t3);
+    });
+  }
+  function along(u) {
+    var n = route.length - 1, f = u * n, i = Math.min(Math.floor(f), n - 1), t = f - i;
+    return cr(route[Math.max(i - 1, 0)], route[i], route[i + 1], route[Math.min(i + 2, n)], t);
+  }
+  function planeRest() { put(plane, home[0], home[1], 18); }
+  plane.addEventListener('click', function () {
+    if (planeBusy) return;
+    egg('plane', 'loop-the-loop');
+    if (reduce) return;
+    planeBusy = true; plane.classList.add('busy');
+    trail.innerHTML = '';
+    var pl = document.createElementNS(NS, 'polyline');
+    trail.appendChild(pl);
+    var pts = [], t0 = performance.now(), D = 4200, prev = along(0);
+    function f(now) {
+      var u = clamp((now - t0) / D), e = u < .5 ? 2 * u * u : 1 - Math.pow(-2 * u + 2, 2) / 2;
+      var p = along(e), rot = Math.atan2(p[1] - prev[1], p[0] - prev[0]) * 180 / Math.PI;
+      if (p[0] !== prev[0] || p[1] !== prev[1]) put(plane, p[0], p[1], rot);
+      prev = p;
+      pts.push((p[0] * 100).toFixed(2) + ',' + (p[1] * 100).toFixed(2));
+      pl.setAttribute('points', pts.join(' '));
+      if (u < 1) requestAnimationFrame(f);
+      else {
+        planeRest(); planeBusy = false; plane.classList.remove('busy');
+        pl.style.opacity = 0;
+        setTimeout(function () { if (pl.parentNode) pl.remove(); }, 1300);
+      }
+    }
+    requestAnimationFrame(f);
+  });
+
+  window.addEventListener('resize', function () {
+    if (!frogBusy) frogRest();
+    if (!planeBusy) planeRest();
+  });
+  frogRest(); planeRest();
+})();
+</script>
+
+</body></html>
